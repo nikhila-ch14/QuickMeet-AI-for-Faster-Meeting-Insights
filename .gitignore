@@ -1,0 +1,28 @@
+# Python cache and compiled files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Environment/config files
+.env
+
+# Uploads and generated static content
+uploads/
+static/
+static/videos/
+
+# File types to ignore
+*.zip
+*.mp3
+*.mp4
+*.m4a
+*.pdf
+*.txt
+*.log
+*.lnk
+
+# OS-specific files
+.DS_Store
+Thumbs.db

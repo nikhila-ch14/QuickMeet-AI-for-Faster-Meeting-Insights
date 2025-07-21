@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickMeet: Upload Recording</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Theme Variables */
+    :root {
+      --bg-color: #0f172a;
+      --text-color: #cbd5e1;
+      --panel-bg: #1e293b;
+      --border-color: #334155;
+      --accent-color: #14b8a6;
+      --button-hover: #0d9488;
+      --gradient-start: #0f766e;
+      --gradient-end: #0d9488;
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      --highlight-color: #22d3ee;
+    }
+    [data-theme="light"] {
+      --bg-color: #f0f9ff;
+      --text-color: #334155;
+      --panel-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --accent-color: #0ea5e9;
+      --button-hover: #0284c7;
+      --gradient-start: #0ea5e9;
+      --gradient-end: #38bdf8;
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      --highlight-color: #06b6d4;
+    }
+
+    /* Global Styles */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+      background-image: radial-gradient(circle at 10% 20%, rgba(20, 184, 166, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
+    }
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 5%;
+      position: relative;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    
+    /* Theme Toggle Button */
+    #themeToggle {
+      position: fixed;
+      top: 20px;
+      right: 5%;
+      background: var(--panel-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    #themeToggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .left-panel {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+    }
+    .left-panel h1 {
+      font-size: 2.8rem;
+      /* your gradient… */
+      background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+
+      /* ← add this first/second */
+      background-clip: text;
+      -webkit-background-clip: text;
+
+      /* make the text itself transparent so the gradient shows through */
+      -webkit-text-fill-color: transparent;
+
+      font-weight: 800;
+    }
+
+    .left-panel p {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      color: var(--text-color);
+      opacity: 0.9;
+    }
+    .upload-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--panel-bg);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-color);
+    }
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    .file-input-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-color: var(--panel-bg);
+      border: 2px dashed var(--border-color);
+      border-radius: 0.75rem;
+      color: var(--text-color);
+      font-size: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      gap: 0.5rem;
+    }
+    .file-input-label:hover {
+      border-color: var(--accent-color);
+      background-color: rgba(20, 184, 166, 0.05);
+    }
+    .file-input-label i {
+      font-size: 1.5rem;
+      color: var(--accent-color);
+    }
+    .upload-section button {
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+      color: white;
+      border: none;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.2);
+    }
+    .upload-section button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3);
+    }
+    .upload-section button i {
+      font-size: 1.2rem;
+    }
+    .upload-section #uploadStatus {
+      font-size: 0.95rem;
+      color: var(--text-color);
+      background-color: var(--panel-bg);
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      white-space: pre-wrap;
+    }
+    .right-panel {
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+      background: var(--panel-bg);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+    .right-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    }
+    .right-panel h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      color: var(--text-color);
+      position: relative;
+      display: inline-block;
+    }
+    .right-panel h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--accent-color);
+      border-radius: 3px;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+    .step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      top: 2.5rem;
+      left: 1.5rem;
+      width: 2px;
+      height: calc(100% + 0.5rem);
+      background-color: var(--border-color);
+      z-index: 0;
+    }
+    .step-icon {
+      font-size: 1.2rem;
+      margin-right: 1.25rem;
+      color: white;
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.2);
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+    .step-content p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-color);
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+        padding-top: 5rem;
+      }
+      .left-panel, .right-panel {
+        max-width: 100%;
+      }
+      .left-panel h1 {
+        font-size: 2.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .left-panel h1 {
+        font-size: 2.2rem;
+      }
+      .right-panel, .upload-section {
+        padding: 1.5rem;
+      }
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .left-panel, .right-panel {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    .right-panel {
+      animation-delay: 0.2s;
+    }
+    
+    /* File name display */
+    #fileName {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <button id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+  
+  <div class="container">
+    <div class="left-panel">
+      <h1>Transform Meeting Recordings into Actionable Insights</h1>
+      <p>Upload your meeting recordings and let our AI generate transcripts, summaries, and action items. Share insights with your team and never miss important details again.</p>
+      <div class="upload-section">
+        <div class="file-input-wrapper">
+          <label class="file-input-label">
+            <i class="fas fa-file-audio"></i>
+            <span>Choose an audio file or drag it here</span>
+            <input type="file" id="audioInput" accept="audio/*">
+          </label>
+          <div id="fileName"></div>
+        </div>
+        <button id="uploadBtn">
+          <i class="fas fa-cloud-upload-alt"></i>
+          Upload & Transcribe
+        </button>
+        <div id="uploadStatus">Status will appear here...</div>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <h2>How It Works</h2>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-upload"></i>
+        </div>
+        <div class="step-content">
+          <h3>Upload Recording</h3>
+          <p>Upload your meeting audio files in any common format</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="step-content">
+          <h3>Generate Transcript</h3>
+          <p>AWS Transcribe creates accurate transcripts with speaker identification</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <div class="step-content">
+          <h3>Extract Insights</h3>
+          <p>AI generates summaries, key points, and action items from your meeting</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-share-alt"></i>
+        </div>
+        <div class="step-content">
+          <h3>Share Results</h3>
+          <p>Download PDFs or share AI video summaries with your team instantly</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('themeToggle');
+      const toggleIcon = toggleBtn.querySelector('i');
+      const root = document.documentElement;
+      
+      function updateThemeUI() {
+        const theme = root.getAttribute('data-theme');
+        if (theme === 'dark') {
+          toggleIcon.className = 'fas fa-sun';
+        } else {
+          toggleIcon.className = 'fas fa-moon';
+        }
+      }
+      
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeUI();
+      });
+      
+      // Initialize from storage
+      const saved = localStorage.getItem('theme');
+      if (saved) root.setAttribute('data-theme', saved);
+      updateThemeUI();
+
+      // Display file name when selected
+      const audioInput = document.getElementById('audioInput');
+      const fileNameDisplay = document.getElementById('fileName');
+      
+      audioInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+          fileNameDisplay.textContent = `Selected: ${this.files[0].name}`;
+        } else {
+          fileNameDisplay.textContent = '';
+        }
+      });
+
+      // Upload logic - preserved exactly as in the original
+      document.getElementById('uploadBtn').addEventListener('click', function () {
+        const audioInput = document.getElementById('audioInput');
+        if (!audioInput.files.length) {
+          alert('Please select an audio file!');
+          return;
+        }
+        document.getElementById('uploadStatus').innerText = 'Uploading and transcribing audio...';
+        const formData = new FormData();
+        formData.append('file', audioInput.files[0]);
+        fetch('/transcribe_audio', { method: 'POST', body: formData })
+          .then(response => { if (!response.ok) throw new Error('Transcription failed.'); return response.json(); })
+          .then(data => {
+            localStorage.setItem('transcript', data.transcript);
+            window.location.href = '/dashboard';
+          })
+          .catch(error => {
+            document.getElementById('uploadStatus').innerText = 'Error: ' + error.message;
+          });
+      });
+    });
+  </script>
+</body>
+</html>

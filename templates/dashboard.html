@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Insights</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Elegant Color Palette */
+    :root {
+      --bg-primary: #f8f9fc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --accent-primary: #6366f1;
+      --accent-secondary: #4f46e5;
+      --accent-light: #e0e7ff;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --transition: all 0.3s ease;
+      --gradient-start: #6366f1;
+      --gradient-end: #8b5cf6;
+      --card-bg-opacity: 1;
+    }
+
+    /* Dark Mode Colors */
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-primary: #818cf8;
+      --accent-secondary: #a5b4fc;
+      --accent-light: #312e81;
+      --border-light: #334155;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      --gradient-start: #818cf8;
+      --gradient-end: #a78bfa;
+      --card-bg-opacity: 0.8;
+    }
+
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Styles */
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+      padding-top: 1rem;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      opacity: 0.9;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      bottom: -1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+      border-radius: 2px;
+    }
+
+    /* Card Styles */
+    .card {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transition: var(--transition);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-light);
+      backdrop-filter: blur(10px);
+      background-color: rgba(var(--bg-secondary), var(--card-bg-opacity));
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+      z-index: 1;
+    }
+
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .tabs button {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .tabs button i {
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+
+    .tabs button:hover {
+      color: var(--accent-primary);
+      background-color: rgba(99, 102, 241, 0.05);
+    }
+
+    .tabs button.active {
+      color: var(--accent-primary);
+      background-color: rgba(99, 102, 241, 0.08);
+    }
+
+    .tabs button.active i {
+      transform: scale(1.2);
+    }
+
+    .tabs button.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    }
+
+    /* Content Area */
+    .content-area {
+      padding: 2.5rem;
+      background-color: var(--bg-secondary);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    /* Output Box */
+    #output {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin-bottom: 2.5rem;
+      min-height: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    #output::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #output::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+      border-radius: 4px;
+    }
+
+    #output::-webkit-scrollbar-thumb {
+      background: var(--border-light);
+      border-radius: 4px;
+    }
+
+    #output::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-light);
+    }
+
+    /* Search Section */
+    .search-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .search-container input[type="text"] {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-container input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .search-container input[type="text"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-container button {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      border: none;
+      color: white;
+      padding: 0 1.5rem;
+      font-size: 1rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-container button i {
+      font-size: 1.1rem;
+    }
+
+    .search-container button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Result Box */
+    #result {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin-bottom: 2.5rem;
+      min-height: 100px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    #result::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #result::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+      border-radius: 4px;
+    }
+
+    #result::-webkit-scrollbar-thumb {
+      background: var(--border-light);
+      border-radius: 4px;
+    }
+
+    #result::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-light);
+    }
+
+    /* Bottom Actions */
+    .bottom-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .bottom-actions button {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-light);
+      color: var(--text-primary);
+      padding: 1.25rem 1rem;
+      font-size: 1rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .bottom-actions button i {
+      font-size: 1.5rem;
+      color: var(--accent-primary);
+      transition: var(--transition);
+    }
+
+    .bottom-actions button:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-primary);
+      background-color: rgba(99, 102, 241, 0.08);
+    }
+
+    .bottom-actions button:hover i {
+      transform: scale(1.2);
+    }
+
+    /* Video */
+    #meetingVideo {
+      width: 100%;
+      border-radius: var(--radius-md);
+      display: none;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--border-light);
+    }
+
+    /* Decorative Elements */
+    .decorative-shape {
+      position: fixed;
+      z-index: -1;
+      opacity: 0.4;
+    }
+
+    .shape-1 {
+      top: 5%;
+      right: 5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle at center, var(--accent-light), transparent 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: float 15s ease-in-out infinite alternate;
+    }
+
+    .shape-2 {
+      bottom: 10%;
+      left: 5%;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle at center, var(--accent-light), transparent 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: float 20s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(30px, 30px); }
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .section-title i {
+      margin-right: 0.75rem;
+      color: var(--accent-primary);
+      font-size: 1.5rem;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: var(--bg-secondary);
+      color: var(--accent-primary);
+      border: 1px solid var(--border-light);
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      z-index: 100;
+      transition: all 0.3s ease;
+      font-size: 1.5rem;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-3px) rotate(15deg);
+      box-shadow: var(--shadow-lg);
+      color: white;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    /* Loading Animation */
+    .loading-animation {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 20px;
+    }
+    
+    .loading-animation div {
+      position: absolute;
+      top: 8px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      animation-timing-function: cubic-bezier(0, 1, 1, 0);
+    }
+    
+    .loading-animation div:nth-child(1) {
+      left: 8px;
+      animation: loading1 0.6s infinite;
+    }
+    
+    .loading-animation div:nth-child(2) {
+      left: 8px;
+      animation: loading2 0.6s infinite;
+    }
+    
+    .loading-animation div:nth-child(3) {
+      left: 32px;
+      animation: loading2 0.6s infinite;
+    }
+    
+    .loading-animation div:nth-child(4) {
+      left: 56px;
+      animation: loading3 0.6s infinite;
+    }
+    
+    @keyframes loading1 {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes loading2 {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(24px, 0); }
+    }
+    
+    @keyframes loading3 {
+      0% { transform: scale(1); }
+      100% { transform: scale(0); }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .bottom-actions {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2.2rem;
+      }
+
+      .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+        width: 3rem;
+        height: 3rem;
+      }
+      
+      .content-area {
+        padding: 1.5rem;
+      }
+      
+      .tabs button {
+        padding: 1rem 0.5rem;
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Animation for content */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    
+    .header {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="decorative-shape shape-1"></div>
+  <div class="decorative-shape shape-2"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Meeting Insights</h1>
+      <p>AI-powered analysis to extract key insights from your meetings</p>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <button id="btnSummary" class="active">
+          <i class="fas fa-list-check"></i>
+          Summary & Action Items
+        </button>
+        <button id="btnVideo">
+          <i class="fas fa-video"></i>
+          AI Video
+        </button>
+      </div>
+
+      <div class="content-area">
+        <div class="section-title">
+          <i class="fas fa-file-lines"></i>
+          Meeting Content
+        </div>
+        <div id="output">Loading transcript...</div>
+
+        <div class="search-section">
+          <div class="section-title">
+            <i class="fas fa-magnifying-glass"></i>
+            Search Assistant
+          </div>
+          <div class="search-container">
+            <input type="text" id="queryInput" placeholder="Ask a question about this meeting...">
+            <button id="searchBtn">
+              <i class="fas fa-search"></i>
+              Search
+            </button>
+          </div>
+          <div id="result">Enter a query and click Search to find specific information from the meeting.</div>
+        </div>
+
+        <video id="meetingVideo" width="640" height="360" controls>
+          <source src="/static/videos/HeyGen_Video_3.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+
+        <div class="section-title">
+          <i class="fas fa-bolt"></i>
+          Actions
+        </div>
+        <div class="bottom-actions">
+          <button id="downloadPptBtn">
+            <i class="fas fa-file-powerpoint"></i>
+            Download PPT
+          </button>
+          <button id="downloadPdfBtn">
+            <i class="fas fa-file-pdf"></i>
+            Download PDF
+          </button>
+          <button id="sendEmailBtn">
+            <i class="fas fa-paper-plane"></i>
+            Send Email
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const toggleIcon = themeToggle.querySelector('i');
+    
+    // Check for saved theme preference or use preferred color scheme
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Set initial theme
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else if (prefersDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    
+    // Update icon based on current theme
+    function updateThemeIcon() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      if (currentTheme === 'dark') {
+        toggleIcon.className = 'fas fa-sun';
+      } else {
+        toggleIcon.className = 'fas fa-moon';
+      }
+    }
+    
+    // Initialize icon
+    updateThemeIcon();
+    
+    // Toggle theme function
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    });
+
+    // Tab functionality
+    const btnSummary = document.getElementById('btnSummary');
+    const btnVideo = document.getElementById('btnVideo');
+    
+    function setActiveTab(activeBtn) {
+      // Remove active class from all tabs
+      [btnSummary, btnVideo].forEach(btn => btn.classList.remove('active'));
+      // Add active class to clicked tab
+      activeBtn.classList.add('active');
+    }
+
+    // Load transcript immediately
+    window.addEventListener('DOMContentLoaded', () => {
+      const transcript = localStorage.getItem('transcript') || 'No transcript found.';
+      document.getElementById('output').innerText = 'Transcript:\n' + transcript;
+      document.getElementById('meetingVideo').style.display = 'none';
+      document.getElementById('output').style.display = 'block';
+      
+      // Set initial active tab
+      setActiveTab(btnSummary);
+    });
+
+    // Summary & Action Items
+    btnSummary.addEventListener('click', () => {
+      // Set active tab
+      setActiveTab(btnSummary);
+      
+      // Hide video and show output
+      document.getElementById('meetingVideo').style.display = 'none';
+      document.getElementById('output').style.display = 'block';
+      
+      // Show loading animation
+      document.getElementById('output').innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="loading-animation"><div></div><div></div><div></div><div></div></div>
+          <p>Generating summary and action items...</p>
+        </div>
+      `;
+      
+      const transcript = localStorage.getItem('transcript');
+      fetch('/generate_summary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({transcript})})
+        .then(r=>r.json())
+        .then(data=>{
+          const sum = data.summary;
+          document.getElementById('output').innerText = 'Summary:\n' + sum;
+          localStorage.setItem('summary',sum);
+          return fetch('/extract_action_items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({summary:sum})});
+        })
+        .then(r=>r.json())
+        .then(data=>{
+          document.getElementById('output').innerText += '\n\nAction Items:\n' + data.action_items;
+          localStorage.setItem('action_items',data.action_items);
+        });
+    });
+
+    // AI Video tab
+    btnVideo.addEventListener('click', () => {
+      // Set active tab
+      setActiveTab(btnVideo);
+      
+      document.getElementById('meetingVideo').style.display = 'block';
+      document.getElementById('output').style.display = 'none';
+    });
+
+    // Search hides video
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      document.getElementById('meetingVideo').style.display = 'none';
+      document.getElementById('output').style.display = 'block';
+      
+      const q = document.getElementById('queryInput').value.trim(); if(!q) return;
+      document.getElementById('result').innerHTML = `
+        <div style="text-align: center; padding: 1rem;">
+          <div class="loading-animation"><div></div><div></div><div></div><div></div></div>
+          <p>Searching...</p>
+        </div>
+      `;
+      
+      fetch('/semantic_search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})})
+        .then(()=>fetch('/static/search_results.txt'))
+        .then(r=>r.text())
+        .then(txt=>document.getElementById('result').innerText = txt);
+    });
+
+    // Download PPT
+    document.getElementById('downloadPptBtn').addEventListener('click', () => {
+      // Hide video
+      document.getElementById('meetingVideo').style.display = 'none';
+      document.getElementById('output').style.display = 'block';
+      
+      // Show loading in output
+      document.getElementById('output').innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="loading-animation"><div></div><div></div><div></div><div></div></div>
+          <p>Generating PowerPoint presentation...</p>
+        </div>
+      `;
+
+      fetch('/generate_ppt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({summary:localStorage.getItem('summary'),action_items:localStorage.getItem('action_items')})})
+        .then(res=>res.blob())
+        .then(blob=>{
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href=url; a.download='summary_action_items.pptx'; a.click();
+          
+          // Restore previous content
+          const transcript = localStorage.getItem('transcript') || 'No transcript found.';
+          document.getElementById('output').innerText = 'Transcript:\n' + transcript;
+        });
+    });
+
+    // Download PDF hides video
+    document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+      document.getElementById('meetingVideo').style.display = 'none';
+      document.getElementById('output').style.display = 'block';
+      
+      // Show loading in output
+      document.getElementById('output').innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="loading-animation"><div></div><div></div><div></div><div></div></div>
+          <p>Generating PDF document...</p>
+        </div>
+      `;
+      
+      window.open('/generate_pdf','_blank');
+      
+      // Restore previous content after a short delay
+      setTimeout(() => {
+        const transcript = localStorage.getItem('transcript') || 'No transcript found.';
+        document.getElementById('output').innerText = 'Transcript:\n' + transcript;
+      }, 1500);
+    });
+
+    // Send Email hides video
+    document.getElementById('sendEmailBtn').addEventListener('click', () => {
+      document.getElementById('meetingVideo').style.display = 'none';
+      document.getElementById('output').style.display = 'block';
+
+      const email = prompt('Enter recipient email:'); if(!email) return;
+      
+      // Show loading in output
+      document.getElementById('output').innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="loading-animation"><div></div><div></div><div></div><div></div></div>
+          <p>Sending email to ${email}...</p>
+        </div>
+      `;
+      
+      fetch('/send_email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to_addresses:[email],summary:localStorage.getItem('summary'),action_items:localStorage.getItem('action_items')})})
+        .then(r=>r.json())
+        .then(d=>{
+          alert(d.message);
+          
+          // Restore previous content
+          const transcript = localStorage.getItem('transcript') || 'No transcript found.';
+          document.getElementById('output').innerText = 'Transcript:\n' + transcript;
+        });
+    });
+  </script>
+</body>
+</html>
